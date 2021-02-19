@@ -1,0 +1,169 @@
+package matrix_mutable;
+
+import java.util.stream.IntStream;
+
+/**
+ * 
+ * @invar | nbOfElements() == getNbOfRows() * getNbOfCollumns()
+ *
+ */
+public class matrix_mut {
+	private int nb_of_rows;
+	private int nb_of_collumns;
+	private double[] elements_array;
+	
+	/**
+	 * Geeft het aantal rijen in de matrix.
+	 * 
+	 * @inspects | this
+	 */
+	public int getNbOfRows() {
+		return nb_of_rows;
+	}
+	
+	/**
+	 * Geeft het aantal kolommen in de matrix.
+	 * 
+	 * @inspects | this
+	 */
+	public int getNbOfCollumns() {
+		return nb_of_collumns;
+	}
+	
+	/**
+	 * Geeft het aantal elementen in de matrix.
+	 * 
+	 * @inspects | this
+	 */
+	public int nbOfElements() {
+		return nb_of_rows * nb_of_collumns;
+	}
+	
+	/**
+	 * Geeft de elementen van de matrix in een rij per rij.
+	 * 
+	 * @creates | result
+	 * @inspects | this
+	 * @post de elementen komen overeen met die van de matrix in de juiste volgorde.
+	 */
+	public double[] getElementsRowmajor() {
+		int index = 0;
+		double[] return_array = new double[this.nbOfElements()];
+		for(int i = 0; i < nb_of_rows; i++) {
+			for(int j = 0; j < nb_of_collumns; j++) {
+				return_array[index] = this.getElementAt(i + 1, j + 1);
+				index++;
+			}
+		}
+		return return_array;
+	}
+
+	
+	/**
+	 * Geeft de elementen van de matrix in een rij per kolom.
+	 * 
+	 * @creates | result
+	 * @inspects | this
+	 * @post de elementen komen overeen met die van de matrix in de juiste volgorde.
+	 */
+	public double[] getElementsColmajor() {
+		double[] copy_array = new double[this.nbOfElements()];
+		System.arraycopy(this.elements_array, 0, copy_array, 0, this.nbOfElements());
+		return copy_array;
+	}
+	
+	/**
+	 * Geeft de elementen van de matrix in een rij per rij in een rij.
+	 * 
+	 * @creates | result
+	 * @inspects | this	
+	 * @post de rijen komen overeen met die van de matrix.
+	 */
+	public double[][] getElementsRowArray() {
+		double[][] return_array = new double[nb_of_rows][nb_of_collumns];
+		double[] all_elements = this.getElementsRowmajor();
+		int k = 0;
+		for(int i=0;i<nb_of_rows;i++) {
+			for(int j=0; j<nb_of_collumns; j++) {
+				return_array[i][j] = all_elements[k];
+				k++;
+			}
+		}
+		
+		return return_array;
+	}
+	
+	
+	/**
+	 * Geeft het element op index (rij, kolom).
+	 * 
+	 * @pre index moet geldig zijn binnen dimensie van matrix.
+	 * 	  |row_nb <= getNbOfRows() && col_nb <= getNbOfCollumns()
+	 */
+	public double getElementAt(int row_nb, int col_nb) {
+		int index = ((col_nb - 1) * this.nb_of_rows + row_nb) - 1;
+		return (this.getElementsColmajor())[index];
+	}
+
+	/**
+	 * Veranderd de matrix waarbij elke term maal factor wordt gedaan.
+	 * 
+	 * @mutates | this
+	 * @post bij elk element is de term vermenigvuldigd.
+	 * 	  | IntStream.range(0, nbOfElements()).allMatch(i ->
+	 * 	  |		(getElementsRowmajor()[i]) == (old(getElementsRowmajor())[i] * factor))	 
+	 */
+	public void scale(double factor) {
+		double[] all_elements = this.getElementsRowmajor();
+		for(int i = 0; i < all_elements.length; i++) {
+			this.elements_array[i] = this.elements_array[i] * factor;
+		}
+	}
+	
+	/**
+	 * Geeft een nieuwe matrix waarbij bij elk element een term wordt bijgeteld.
+	 * 
+	 * @creates | result
+	 * @inspects | this
+	 * @post bij elk element is de term toegevoegd.
+	 * 	  | IntStream.range(0, nbOfElements()).allMatch(i ->
+	 * 	  |		(getElementsRowmajor()[i]) == (old(getElementsRowmajor())[i] + term))	 
+	 */
+	public void add(double term) {
+		double[] all_elements = this.getElementsRowmajor();
+		for(int i = 0; i < all_elements.length; i++) {
+			this.elements_array[i] = this.elements_array[i] + term;
+		}
+	}
+	
+	/**
+	 * Initialiseert het matrix-object.
+	 * @creates |result
+	 * @throws IllegalArgumentException als de dimensies niet positief zijn.
+	 * 	  |nb_of_rows < 1 || nb_of_collumns < 1
+	 * @throws IllegalArgumentException het aantal elementen niet exact in de matrix past.
+	 * 	  |nb_of_rows * nb_of_collumns != initialElements.length
+	 */
+	public matrix_mut(int nb_of_rows, int nb_of_collumns, double[] initialElements){
+		if(nb_of_rows < 1 || nb_of_collumns < 1)
+			throw new IllegalArgumentException("dimensies moeten positief zijn");
+		if(nb_of_rows * nb_of_collumns != initialElements.length)
+			throw new IllegalArgumentException("aantal elementen komt niet overeen met dimensie");
+
+		
+		this.nb_of_rows = nb_of_rows;
+		this.nb_of_collumns = nb_of_collumns;
+		
+		int index = 0;
+		double[] col_maj_array = new double[nb_of_rows * nb_of_collumns];
+		for(int i = 0; i < nb_of_collumns; i++) {
+			for(int j = 0; j < nb_of_rows; j++) {
+				col_maj_array[index] = initialElements[i + j*nb_of_collumns];
+				index++;
+			}
+		}
+		
+		this.elements_array = col_maj_array;
+	}
+	
+}
