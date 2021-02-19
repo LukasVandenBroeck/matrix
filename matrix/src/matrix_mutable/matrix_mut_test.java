@@ -36,7 +36,8 @@ class matrix_mut_test {
 		
 		test.scale(5);
 		assertArrayEquals(test.getElementsRowmajor(), factorElements);
-		test = new matrix_mut(2,3,elements);
+		double[] elements2 = {1.2, 3.4, 5.6, 3.8, 6.3, 0.3};
+		test = new matrix_mut(2,3,elements2);
 		
 		test.add(1.2);
 		assertArrayEquals(test.getElementsRowmajor(), plusElements);

@@ -47,17 +47,10 @@ public class matrix_imm {
 	 * @post de elementen komen overeen met die van de matrix in de juiste volgorde.
 	 */
 	public double[] getElementsRowmajor() {
-		int index = 0;
-		double[] return_array = new double[this.nbOfElements()];
-		for(int i = 0; i < nb_of_rows; i++) {
-			for(int j = 0; j < nb_of_collumns; j++) {
-				return_array[index] = this.getElementAt(i + 1, j + 1);
-				index++;
-			}
-		}
-		return return_array;
+		double[] copy_array = new double[this.nbOfElements()];
+		System.arraycopy(this.elements_array, 0, copy_array, 0, this.nbOfElements());
+		return copy_array;
 	}
-
 	
 	/**
 	 * Geeft de elementen van de matrix in een rij per kolom.
@@ -67,9 +60,15 @@ public class matrix_imm {
 	 * @post de elementen komen overeen met die van de matrix in de juiste volgorde.
 	 */
 	public double[] getElementsColmajor() {
-		double[] copy_array = new double[this.nbOfElements()];
-		System.arraycopy(this.elements_array, 0, copy_array, 0, this.nbOfElements());
-		return copy_array;
+		int index = 0;
+		double[] return_array = new double[this.nbOfElements()];
+		for(int i = 0; i < nb_of_collumns; i++) {
+			for(int j = 0; j < nb_of_rows; j++) {
+				return_array[index] = this.getElementAt(j + 1, i + 1);
+				index++;
+			}
+		}
+		return return_array;
 	}
 	
 	/**
@@ -101,8 +100,8 @@ public class matrix_imm {
 	 * 	  |row_nb <= getNbOfRows() && col_nb <= getNbOfCollumns()
 	 */
 	public double getElementAt(int row_nb, int col_nb) {
-		int index = ((col_nb - 1) * this.nb_of_rows + row_nb) - 1;
-		return (this.getElementsColmajor())[index];
+		int index = ((row_nb - 1) * this.nb_of_collumns + col_nb) - 1;
+		return (this.getElementsRowmajor())[index];
 	}
 
 	/**
@@ -158,17 +157,7 @@ public class matrix_imm {
 		
 		this.nb_of_rows = nb_of_rows;
 		this.nb_of_collumns = nb_of_collumns;
-		
-		int index = 0;
-		double[] col_maj_array = new double[nb_of_rows * nb_of_collumns];
-		for(int i = 0; i < nb_of_collumns; i++) {
-			for(int j = 0; j < nb_of_rows; j++) {
-				col_maj_array[index] = initialElements[i + j*nb_of_collumns];
-				index++;
-			}
-		}
-		
-		this.elements_array = col_maj_array;
+		this.elements_array = initialElements;
 	}
 	
 		
